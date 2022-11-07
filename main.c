@@ -4,19 +4,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct cell
-{
-    struct cell* right;
-    struct cell* left;
-    struct cell* father;
-    int data;
-}cell, tree;
+typedef struct node {
+    int key;
+    struct node *left, *right;
+} node;
 
-tree * insert(tree *head, int data);
-void isAVL(tree *head);
-int main(int argc, char const *argv[])
+node* newNode(int item);
+node * insert(node *root, int key);
+
+int height(node* node);
+int max(int a, int b);
+int isBalanced( node* root);
+
+int main()
 {
-    tree *head = NULL;
+    node *root = NULL;
     int opt = 0;
     do
     {
@@ -29,7 +31,7 @@ int main(int argc, char const *argv[])
             int valor = 0;
             printf("Digite um valor inteiro a ser adicionado na arvore: \n");
             scanf("%d", &valor);
-            head = insert(head, valor);
+            root = insert(root, valor);
             break;
         case 1:
             printf("Parando...\n");
@@ -40,56 +42,48 @@ int main(int argc, char const *argv[])
             break;
         }
     } while (opt != 1);
-    isAVL(head);
+    if (isBalanced(root) == 1)
+        printf("Arvore AVL \n");
+    else
+        printf("Arvore nao AVL \n");
     return 0;
 }
-tree * insert (tree *head, int data) {
-    if(head == NULL){
-        head = malloc(sizeof(tree));
-        head->data = data;
-        return head;
-    }
-    if(head->data < data){
-        if(head->right != NULL){
-            insert(head->right, data);
-        }else{
-            cell* node = malloc(sizeof(tree));
-            node->data = data;
-            node->father = head;
-            head->right = node;
-        }
-    }
-    else{
-        if(head->left != NULL){
-            insert(head->left, data);
-        }else{
-            cell* node = malloc(sizeof(tree));
-            node->data = data;
-            node->father = head;
-            head->left = node;
-        }
-    }
-    return head;
+node* newNode(int item)
+{
+    node* temp = (node*)malloc(sizeof(node));
+    temp->key = item;
+    temp->left = temp->right = NULL;
+    return temp;
 }
-
-void isAVL(tree *head){
-    cell* right = head->right;
-    int rH = 0;
-    cell* left = head->left;
-    int lH = 0;
-    do
-    {
-        right = right->right;
-        rH++;
-    } while (right != NULL);
-    do
-    {
-        left = left->left;
-        lH++;
-    } while (left != NULL);
-    if((lH - rH) != 2 && (lH - rH) != -2){
-        printf("Não é AVL");
-    }else{
-        printf(" é AVL");
-    }
+node * insert(node *root, int key)
+{
+    if (root == NULL)
+        return newNode(key);
+    if (key < root->key)
+        root->left = insert(root->left, key);
+    else if (key > root->key)
+        root->right = insert(root->right, key);
+    return root;
+}
+int height(node* node)
+{
+    if (node == NULL)
+        return 0;
+    return 1 + max(height(node->left), height(node->right));
+}
+int max(int a, int b)
+{
+    return (a >= b) ? a : b; 
+}
+int isBalanced(node* root)
+{
+    int lh;
+    int rh;
+    if (root == NULL)
+        return 1;
+    lh = height(root->left);
+    rh = height(root->right);
+    if (abs(lh - rh) <= 1 && isBalanced(root->left) && isBalanced(root->right))
+        return 1;
+    return 0;
 }
