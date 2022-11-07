@@ -15,6 +15,7 @@ node * insert(node *root, int key);
 int height(node* node);
 int max(int a, int b);
 int isBalanced( node* root);
+void freeTree(node *root);
 
 int main()
 {
@@ -34,8 +35,6 @@ int main()
             root = insert(root, valor);
             break;
         case 1:
-            printf("Parando...\n");
-            printf("Bye Bye...\n");
             break;
         default:
             printf("Valor errado digite novamente: \n");
@@ -46,6 +45,9 @@ int main()
         printf("Arvore AVL \n");
     else
         printf("Arvore nao AVL \n");
+    freeTree(root);
+    printf("Parando...\n");
+    printf("Bye Bye...\n");
     return 0;
 }
 node* newNode(int item)
@@ -86,4 +88,13 @@ int isBalanced(node* root)
     if (abs(lh - rh) <= 1 && isBalanced(root->left) && isBalanced(root->right))
         return 1;
     return 0;
+}
+void freeTree(node *root)
+{
+    if (root != NULL)
+    {
+        freeTree(root->left);
+        freeTree(root->right);
+        free(root);
+    }
 }
